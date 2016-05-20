@@ -1,0 +1,18 @@
+apply plugin: 'groovy'
+
+repositories {
+//	mavenLocal()
+	maven { url 'http://repo1.maven.org/maven2' }
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+	compile 'org.tmatesoft.svnkit:svnkit:1.8.12'
+	testCompile 'junit:junit:4.12'
+}
+
+//多项目时增加依赖
+//rootProject.dependencies {
+//	runtime project(path)
+//}
