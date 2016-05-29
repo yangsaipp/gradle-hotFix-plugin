@@ -45,8 +45,8 @@ class HotFixParser extends DefaultTask {
 		if(hotFixModel.svn) {
 			scmService = new SVNServiceImpl()
 			scmInfo = hotFixModel.svn
-			scmInfo.workingPath = project.projectDir
-			scmlog = scmService.getLog(scmInfo, '150', null)
+			scmInfo.workingPath = project.rootProject.projectDir
+			scmlog = scmService.getLog(scmInfo, '150', '-1')
 		}else if(hotFixModel.git) {
 			scmService = new GitServiceImpl()
 			scmInfo = hotFixModel.git

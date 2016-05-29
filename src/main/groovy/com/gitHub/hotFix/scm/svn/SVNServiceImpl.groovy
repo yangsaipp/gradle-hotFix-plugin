@@ -49,7 +49,7 @@ class SVNServiceImpl implements SCMService {
 		SVNRepository repository = null;
 		SVNURL svnUrl = null
 		try {
-			if(o[workingPath]?.trim()) {
+			if(workingPath?.trim()) {
 				SVNWCClient client = SVNClientManager.newInstance().getWCClient();
 				SVNInfo svnInfo = null;
 				try {
@@ -78,10 +78,10 @@ class SVNServiceImpl implements SCMService {
 //			buildLogger.error("error while fetching the latest repository revision: " + svne.getMessage());
 //		}
 
-		final Collection logEntries = null;
+		final Collection logEntries = new LinkedList();
 		try {
 			String[] targetPath = [''] 
-			repository.log(targetPath, startR, endR, true, true, 0, null, true, new ISVNLogEntryHandler() {
+			repository.log(targetPath, startR, endR, true, true, 0, true, null, new ISVNLogEntryHandler() {
 	            public void handleLogEntry(SVNLogEntry logEntry) {
 	                logEntries.add(logEntry);
 	            }        

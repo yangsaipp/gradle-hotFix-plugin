@@ -3,9 +3,8 @@ package com.gitHub.hotFix.task
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.logging.LoggingManager
 import org.gradle.api.tasks.TaskAction
-
-import com.gitHub.hotFix.model.HotFixComponent
 
 /**
  * hotFix生成任务类
@@ -13,7 +12,7 @@ import com.gitHub.hotFix.model.HotFixComponent
  *
  */
 class HotFixGenerator extends DefaultTask {
-	static Logger buildLogger = Logging.getLogger(HotFixGenerator.class);
+	Logger buildLogger = Logging.getLogger(HotFixGenerator.class);
 	def hotFixModel
 	
 	@TaskAction
@@ -32,5 +31,4 @@ class HotFixGenerator extends DefaultTask {
 			}
 		}
 	}
-	
 }

@@ -50,7 +50,7 @@ class ProjectSCM {
 	
 	@Override
 	String toString() {
-		return "url：${this.url};username：${this.username};password：${this.password}"
+		return "url：${this.url};username：${this.username};password：${this.password};workingPath:${this.workingPath}"
 	}
 	
 }
