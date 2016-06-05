@@ -47,6 +47,8 @@ class HotFixParser extends DefaultTask {
 			scmInfo = hotFixModel.svn
 			//获取当前project工程文件夹名到working path的相对路径，用于查询对应目录的日志
 			scmInfo.workingPath = project.rootProject.projectDir.path
+			//FIXME:targetpath处理问题，如复杂工程结构：/root、/root/project1、/root/project1/project1.1
+			String targetpath =  project.rootProject == project ? '' : project.projectDir.name 
 			scmlog = scmService.getLog(scmInfo, '0', '-1', project.projectDir.name)
 		}else if(hotFixModel.git) {
 			scmService = new GitServiceImpl()
