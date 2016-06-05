@@ -29,4 +29,8 @@ class SCMLog {
 		addPath(newPath)
 		addDeletePath(oldPath);
 	}
+	
+	boolean isEmpty() {
+		return pathSet.empty && deletePathSet.empty
+	}
 }

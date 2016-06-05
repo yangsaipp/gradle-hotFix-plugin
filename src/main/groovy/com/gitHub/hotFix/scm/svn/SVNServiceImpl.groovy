@@ -38,7 +38,7 @@ class SVNServiceImpl implements SCMService {
 	static Logger buildLogger = Logging.getLogger(SCMService.class);
 	
 	@Override
-	public SCMLog getLog(ProjectSCM scmInfo, String startRevision, String endRevision) {
+	public SCMLog getLog(ProjectSCM scmInfo, String startRevision, String endRevision, String targetPath) {
 		String url = scmInfo.url
 		String name = scmInfo.username
 		String password = scmInfo.password
@@ -56,6 +56,7 @@ class SVNServiceImpl implements SCMService {
 					svnInfo = client.doInfo(new File(workingPath), SVNRevision.WORKING);
 				} catch (SVNException e) {
 					buildLogger.error("error while fetching svn client info: " + e.getMessage());
+					throw e
 				}
 				svnUrl = svnInfo.getURL();
 			}else {
@@ -64,6 +65,7 @@ class SVNServiceImpl implements SCMService {
 			repository = SVNRepositoryFactory.create(svnUrl);
 		} catch (SVNException svne) {
 			buildLogger.error("error while creating an SVNRepository for the location '" + url + "': " + svne.getMessage());
+			throw svne
 		}
 
 		ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(name, password.toCharArray());
@@ -80,15 +82,16 @@ class SVNServiceImpl implements SCMService {
 
 		final Collection logEntries = new LinkedList();
 		try {
-			String[] targetPath = [''] 
-			repository.log(targetPath, startR, endR, true, true, 0, true, null, new ISVNLogEntryHandler() {
+			String[] targetPaths = [targetPath] 
+			repository.log(targetPaths, startR, endR, true, true, 0, true, null, new ISVNLogEntryHandler() {
 	            public void handleLogEntry(SVNLogEntry logEntry) {
 	                logEntries.add(logEntry);
 	            }        
 	        });
 
 		} catch (SVNException svne) {
-			buildLogger.error("error while collecting log information for '" + svnUrl.getPath() + "': " + svne.getMessage());
+			buildLogger.error("\nerror while collecting log information for '" + svnUrl + "': " + svne.getMessage());
+			throw svne
 		}
 		
 		SCMLog scmLog = new SCMLog()

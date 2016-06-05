@@ -76,10 +76,10 @@ class HotFixComponent {
 	
 	@Override
 	String toString() {
-		return "[name:${name},source：${source},output：${output},processSource:${processSource},processType:${processType},\n excludes：${excludes};includes：${includes}]"
+		return "[name:${name}\n,source：${source}\n,output：${output}\n,processSource:${processSource}\n,processType:${processType}\n,excludes：${excludes};includes：${includes}]\n,hotFixFileSet:${hotFixFileSet}"
 	}
 	
 	String dump() {
-		return toString() + "\n[name:${name},hotFixFileSet:${hotFixFileSet}]"
+		return toString()
 	}
 }

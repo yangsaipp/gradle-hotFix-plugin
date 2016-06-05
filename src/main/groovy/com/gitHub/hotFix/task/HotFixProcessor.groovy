@@ -74,9 +74,9 @@ class HotFixProcessor extends DefaultTask {
 					DEFAULT_PROCESS_TYPE.get(component.processType).process(this,component)
 				}
 			}
-			
 			//FIXME 执行用户自定义的闭包方法
-			buildLogger.quiet("{}",component.toString())
+			buildLogger.quiet('process component[name={}] complete', component.name)
+			buildLogger.quiet("component -> {}", component.dump)
 		}
 	}
 }

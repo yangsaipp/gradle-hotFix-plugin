@@ -10,8 +10,9 @@ interface SCMService {
 	 * @param scmInfo
 	 * @param startRevision
 	 * @param endRevision
+	 * @param targetPath 需要获取log的path
 	 * @return
 	 */
-	SCMLog getLog(ProjectSCM scmInfo, String startRevision, String endRevision) 
+	SCMLog getLog(ProjectSCM scmInfo, String startRevision, String endRevision, String targetPath) 
 	
 }

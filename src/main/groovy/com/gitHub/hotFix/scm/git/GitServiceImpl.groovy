@@ -7,7 +7,7 @@ import com.gitHub.hotFix.scm.model.SCMLog;
 class GitServiceImpl implements SCMService {
 
 	@Override
-	public SCMLog getLog(ProjectSCM scmInfo, String startRevision, String endRevision) {
+	public SCMLog getLog(ProjectSCM scmInfo, String startRevision, String endRevision, String targetPath) {
 		SCMLog log = new SCMLog()
 		// TODO Auto-generated method stub
 		return log;
