@@ -7,27 +7,24 @@ class SVNServiceImplTest extends spock.lang.Specification {
 	SCMLog scmLog
 	ProjectSCM scmInfo
 	SVNServiceImpl svnServiceImpl  = new SVNServiceImpl()
+	
+	String svnUrl = 'http://www.svnchina.com/svn/gradle_plugin_test'
 	String username = 'testyss'
 	String password = 'testyss'
 	String testWorkingPath = 'e:\\Workspaces\\workspace_java\\gradle_plugin_test'
 	def setup() {
-		scmInfo = new ProjectSCM(username:username, password: password, workingPath: testWorkingPath)
+//		scmInfo = new ProjectSCM(username:username, password: password, workingPath: testWorkingPath, url: svnUrl)
 //		println "init scmInfo : ${scmInfo}"
 	}
 	
-//	@Test
-//	public void testGetLog() {
-//		scmLog = new SVNServiceImpl().getLog(scmInfo, "0", "-1")
-//		assertNotNull("log can not be null", scmLog)
-//	}
-	
-	def "scm log 不能为空"() {
+	def "scm log not empty by svn url"() {
 		given:
+		scmInfo = new ProjectSCM(username:username, password: password, url: svnUrl)
 		scmLog = svnServiceImpl.getLog(scmInfo, start, end, targetpath)
 		expect:
-		println scmLog.pathSet.size()
-		println scmLog.deletePathSet.size()
-		println scmLog.dump()
+//		println scmLog.pathSet.size()
+//		println scmLog.deletePathSet.size()
+//		println scmLog.dump()
 		!scmLog.empty
 		where:
 		start | end || targetpath
@@ -38,7 +35,7 @@ class SVNServiceImplTest extends spock.lang.Specification {
 	
 	def 'file string minus test'() {
 		given:
-		println new File(string1).name
+//		println new File(string1).name
 		expect:
 		new File(string1).path - new File(string2).path == string3
 		where:
