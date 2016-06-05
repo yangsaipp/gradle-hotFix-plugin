@@ -27,7 +27,9 @@ import com.gitHub.hotFix.scm.svn.SVNServiceImpl
 class HotFixParser extends DefaultTask {
 	static Logger buildLogger = Logging.getLogger(HotFixParser.class);
 //	static Logger buildLogger = LoggerFactory.getLogger(HotFixParser.class)
-	
+	static String param_start_revision = 'sRevision'
+	static String param_end_revision = 'eRevision'
+		
 	def hotFixModel
 	
 	@TaskAction
@@ -42,14 +44,28 @@ class HotFixParser extends DefaultTask {
 		SCMService scmService
 		ProjectSCM scmInfo
 		SCMLog scmlog
+		String startRevision
+		String endRevision
+		if(project.hasProperty(param_start_revision)) {
+			startRevision = project.property(param_start_revision)
+		}
+		if(project.hasProperty(param_end_revision)) {
+			endRevision = project.property(param_end_revision)
+		}
 		if(hotFixModel.svn) {
 			scmService = new SVNServiceImpl()
 			scmInfo = hotFixModel.svn
 			//获取当前project工程文件夹名到working path的相对路径，用于查询对应目录的日志
 			scmInfo.workingPath = project.rootProject.projectDir.path
+			if(!startRevision) {
+				throw new RuntimeException("Please specify the SVN start revision. for example:gradle hotFixGenerate -P${param_start_revision}=2")
+			}
+			if(!endRevision) {
+				endRevision = '-1'
+			}
 			//FIXME:targetpath处理问题，如复杂工程结构：/root、/root/project1、/root/project1/project1.1
 			String targetpath =  project.rootProject == project ? '' : project.projectDir.name 
-			scmlog = scmService.getLog(scmInfo, '0', '-1', project.projectDir.name)
+			scmlog = scmService.getLog(scmInfo, startRevision, endRevision, project.projectDir.name)
 		}else if(hotFixModel.git) {
 			scmService = new GitServiceImpl()
 			scmInfo = hotFixModel.git

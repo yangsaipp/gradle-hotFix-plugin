@@ -21,7 +21,7 @@ class HotFixGenerator extends DefaultTask {
 		project.delete(hotFixModel.targetDir)
 		hotFixModel.components.each {key, component->
 			if(!component.hotFixFileSet.empty) {
-				buildLogger.quiet('generate hotfix:{}', component.name)
+				buildLogger.quiet('generate hotfix -> {}', component.name)
 				buildLogger.quiet(component.dump())
 				project.copy {
 					from component.processSource ? component.processSource: component.source, {
