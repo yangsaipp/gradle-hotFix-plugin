@@ -7,19 +7,21 @@ version = '1.0-SNAPSHOT'
 
 repositories {
 	mavenLocal()
-	maven { url 'http://repo1.maven.org/maven2' }
+	maven{
+		url "http://10.10.50.24:8081/nexus/content/groups/public/"
+	}
+	mavenCentral()
 }
 
 dependencies {
     compile gradleApi()
-//    compile localGroovy()
-	compile "org.codehaus.groovy:groovy-all:2.4.4"
+//	compile localGroovy()
+//	compile "org.codehaus.groovy:groovy-all:2.4.3"
 	compile 'org.tmatesoft.svnkit:svnkit:1.8.12'
 //	testCompile 'junit:junit:4.12'
-//	testCompile("org.spockframework:spock-core:0.7-groovy-2.0") {
-//		exclude group: "org.codehaus.groovy"
-//	}
-	testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+	testCompile("org.spockframework:spock-core:1.0-groovy-2.4") {
+		exclude group: "org.codehaus.groovy"
+	}
 }
 
 // upload to local
@@ -33,6 +35,10 @@ publishing {
 			from components.java // ADD THIS LINE
 		}
 	}
+}
+
+task sysout << {
+	println GroovySystem.version.replaceAll(/\.\d+$/,'')
 }
 
 //多项目时增加依赖
