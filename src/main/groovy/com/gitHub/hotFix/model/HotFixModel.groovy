@@ -16,9 +16,9 @@ class HotFixModel {
 	ProjectSCM git
 	ProjectSCM svn
 
-	HotFixComponent java
-	HotFixComponent resource
-	HotFixComponent webapp
+	HotFixComponent java = new HotFixComponent(name: 'java', processType: 'java')
+	HotFixComponent resource = new HotFixComponent(name: 'resource', processType: 'resource')
+	HotFixComponent webapp = new HotFixComponent(name: 'webapp', processType: 'webapp')
 	
 	
 	void git(Closure closure) {
@@ -36,23 +36,14 @@ class HotFixModel {
 	}
 	
 	void java(Closure closure) {
-		if(!java) {
-			java = new HotFixComponent(name: 'java', processType: 'java')
-		}
 		ConfigureUtil.configure(closure, java)
 	}
 	
 	void resource(Closure closure) {
-		if(!resource) {
-			resource = new HotFixComponent(name: 'resource', processType: 'resource')
-		}
 		ConfigureUtil.configure(closure, resource)
 	}
 	
 	void webapp(Closure closure) {
-		if(!webapp) {
-			webapp = new HotFixComponent(name: 'webapp', processType: 'webapp')
-		}
 		ConfigureUtil.configure(closure, webapp)
 	}
 	
