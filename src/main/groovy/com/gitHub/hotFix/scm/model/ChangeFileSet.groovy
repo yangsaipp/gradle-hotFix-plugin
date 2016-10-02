@@ -1,6 +1,6 @@
 package com.gitHub.hotFix.scm.model
 
-class SCMLog {
+class ChangeFileSet {
 	/** SCM里hotFix文件路径集合 */ 
 	Set<String> pathSet = []
 	

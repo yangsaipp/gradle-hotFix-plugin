@@ -80,13 +80,13 @@ class HotFixProcessor extends DefaultTask {
 			if(sysProcessType && sysProcessType.perfectComponent) {
 				sysProcessType.perfectComponent(this, component)
 			}
-			buildLogger.quiet('perfected Component : {}', component.dump())
+			buildLogger.quiet('perfected component : {}', component.dump())
 		}
 		
 		// 遍历changeFileSet，识别java、resource、webapp文件，并进行对应的处理
-		def scmlog = hotFixModel.scmlog
+		def changeFileSet = hotFixModel.changeFileSet
 		def ignoreFiles = []	// 不处理的变更文件
-		scmlog.pathSet.each {
+		changeFileSet.pathSet.each {
 			it = it.replaceAll("\\\\", '/');
 			boolean isIgnore = true
 			for (component in hotFixModel.components.values()) {

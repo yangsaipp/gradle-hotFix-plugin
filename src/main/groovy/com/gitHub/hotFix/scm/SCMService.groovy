@@ -1,7 +1,7 @@
 package com.gitHub.hotFix.scm
 
 import com.gitHub.hotFix.model.ProjectSCM
-import com.gitHub.hotFix.scm.model.SCMLog
+import com.gitHub.hotFix.scm.model.ChangeFileSet
 
 interface SCMService {
 	
@@ -13,6 +13,6 @@ interface SCMService {
 	 * @param targetPath 需要获取log的path
 	 * @return
 	 */
-	SCMLog getLog(ProjectSCM scmInfo, String startRevision, String endRevision, String targetPath) 
+	ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, String startRevision, String endRevision, String targetPath) 
 	
 }

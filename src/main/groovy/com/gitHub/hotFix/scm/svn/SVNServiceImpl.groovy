@@ -24,7 +24,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil
 
 import com.gitHub.hotFix.model.ProjectSCM
 import com.gitHub.hotFix.scm.SCMService
-import com.gitHub.hotFix.scm.model.SCMLog
+import com.gitHub.hotFix.scm.model.ChangeFileSet
 
 /**
  * 提供svn服务，如查询log
@@ -38,7 +38,7 @@ class SVNServiceImpl implements SCMService {
 	static Logger buildLogger = Logging.getLogger(SCMService.class);
 	
 	@Override
-	public SCMLog getLog(ProjectSCM scmInfo, String startRevision, String endRevision, String targetPath) {
+	public ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, String startRevision, String endRevision, String targetPath) {
 		String url = scmInfo.url
 		String name = scmInfo.username
 		String password = scmInfo.password
@@ -94,7 +94,7 @@ class SVNServiceImpl implements SCMService {
 			throw svne
 		}
 		
-		SCMLog scmLog = new SCMLog()
+		ChangeFileSet changeFileSet = new ChangeFileSet()
 		for (Iterator entries = logEntries.iterator(); entries.hasNext();) {
 			/*
 			 * gets a next SVNLogEntry
@@ -134,17 +134,17 @@ class SVNServiceImpl implements SCMService {
 					SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths().get(changedPaths.next());
 					switch(entryPath.getType()) {
 						case SVNLogEntryPath.TYPE_ADDED:
-							scmLog.addPath(entryPath.getPath())
+							changeFileSet.addPath(entryPath.getPath())
 							break
 						case SVNLogEntryPath.TYPE_DELETED:
-							scmLog.addDeletePath(entryPath.getPath())
+							changeFileSet.addDeletePath(entryPath.getPath())
 							break
 						case SVNLogEntryPath.TYPE_MODIFIED:
-							scmLog.addPath(entryPath.getPath())
+							changeFileSet.addPath(entryPath.getPath())
 							break
 						case SVNLogEntryPath.TYPE_REPLACED:
 							//FIXME replace类型时获oldpath
-							scmLog.addRenamePath(entryPath.getPath(), entryPath.getCopyPath())
+							changeFileSet.addRenamePath(entryPath.getPath(), entryPath.getCopyPath())
 							break
 						default:
 							break
@@ -152,7 +152,7 @@ class SVNServiceImpl implements SCMService {
 				}
 			}
 		}
-		return scmLog;
+		return changeFileSet;
 	}
 	
 	/*

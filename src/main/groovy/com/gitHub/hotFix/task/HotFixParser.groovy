@@ -8,7 +8,7 @@ import org.gradle.api.tasks.TaskAction
 import com.gitHub.hotFix.model.ProjectSCM
 import com.gitHub.hotFix.scm.SCMService
 import com.gitHub.hotFix.scm.git.GitServiceImpl
-import com.gitHub.hotFix.scm.model.SCMLog
+import com.gitHub.hotFix.scm.model.ChangeFileSet
 import com.gitHub.hotFix.scm.svn.SVNServiceImpl
 
 /**
@@ -36,7 +36,7 @@ class HotFixParser extends DefaultTask {
 		
 		SCMService scmService
 		ProjectSCM scmInfo
-		SCMLog scmlog
+		ChangeFileSet changeFileSet
 		String startRevision
 		String endRevision
 		if(project.hasProperty(param_start_revision)) {
@@ -58,20 +58,20 @@ class HotFixParser extends DefaultTask {
 			}
 			//FIXME:targetpath处理问题，如复杂工程结构：/root、/root/project1、/root/project1/project1.1
 			String targetpath =  project.rootProject == project ? '' : project.projectDir.name 
-			scmlog = scmService.getLog(scmInfo, startRevision, endRevision, project.projectDir.name)
+			changeFileSet = scmService.getChangeFileSet(scmInfo, startRevision, endRevision, project.projectDir.name)
 		}else if(hotFixModel.git) {
 			scmService = new GitServiceImpl()
 			scmInfo = hotFixModel.git
-			scmlog = scmService.getLog(scmInfo, '0', null, project.projectDir.path - project.rootDir.path)
+			changeFileSet = scmService.getChangeFileSet(scmInfo, '0', null, project.projectDir.path - project.rootDir.path)
 		}else {
 			File localConfigureFile = new File("${project.projectDir}/hotFix.txt")
 			buildLogger.debug('read loacl config file: {}.', localConfigureFile.path)
-			scmlog = new SCMLog()
+			changeFileSet = new ChangeFileSet()
 			localConfigureFile.eachLine('UTF-8'){
-				scmlog.addPath(it)
+				changeFileSet.addPath(it)
 			}
 		}
-		hotFixModel.ext.scmlog = scmlog
+		hotFixModel.ext.changeFileSet = changeFileSet
 //		buildLogger.quiet("log:{}",scmlog)
 	}
 }

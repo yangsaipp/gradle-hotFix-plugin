@@ -1,10 +1,10 @@
 package com.gitHub.hotFix.scm.svn;
 
 import com.gitHub.hotFix.model.ProjectSCM
-import com.gitHub.hotFix.scm.model.SCMLog
+import com.gitHub.hotFix.scm.model.ChangeFileSet
 
 class SVNServiceImplTest extends spock.lang.Specification {
-	SCMLog scmLog
+	ChangeFileSet scmLog
 	ProjectSCM scmInfo
 	SVNServiceImpl svnServiceImpl  = new SVNServiceImpl()
 	
@@ -20,7 +20,7 @@ class SVNServiceImplTest extends spock.lang.Specification {
 	def "scm log not empty by svn url"() {
 		given:
 		scmInfo = new ProjectSCM(username:username, password: password, url: svnUrl)
-		scmLog = svnServiceImpl.getLog(scmInfo, start, end, targetpath)
+		scmLog = svnServiceImpl.getChangeFileSet(scmInfo, start, end, targetpath)
 		expect:
 //		println scmLog.pathSet.size()
 //		println scmLog.deletePathSet.size()
