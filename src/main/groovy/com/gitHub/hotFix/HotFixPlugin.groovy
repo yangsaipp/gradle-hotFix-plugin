@@ -27,7 +27,8 @@ class HotFixPlugin implements Plugin<Project> {
 		configureParseTask(project, model)
 		configureProcessTask(project, model)
 		configureGenerateTask(project, model)
-		
+		println 'apply project hotfix'
+		println model
 		project.task('hotFixDump') << {
 			println model.dumps()
 		}

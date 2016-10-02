@@ -11,7 +11,7 @@ class HotFixModel {
 	/**
 	 * hotFix输出路径，包括最终生成的hotFix文件名
 	 */
-	String targetDir
+	String targetDir = 'build/hotFix/' + new Date().format('yyyy-MM-dd_HHmm')
 
 	ProjectSCM git
 	ProjectSCM svn
@@ -37,21 +37,21 @@ class HotFixModel {
 	
 	void java(Closure closure) {
 		if(!java) {
-			java = new HotFixComponent(name: 'java')
+			java = new HotFixComponent(name: 'java', processType: 'java')
 		}
 		ConfigureUtil.configure(closure, java)
 	}
 	
 	void resource(Closure closure) {
 		if(!resource) {
-			resource = new HotFixComponent(name: 'resource')
+			resource = new HotFixComponent(name: 'resource', processType: 'resource')
 		}
 		ConfigureUtil.configure(closure, resource)
 	}
 	
 	void webapp(Closure closure) {
 		if(!webapp) {
-			webapp = new HotFixComponent(name: 'webapp')
+			webapp = new HotFixComponent(name: 'webapp', processType: 'webapp')
 		}
 		ConfigureUtil.configure(closure, webapp)
 	}

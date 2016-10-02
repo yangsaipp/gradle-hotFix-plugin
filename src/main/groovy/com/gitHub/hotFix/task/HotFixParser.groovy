@@ -29,17 +29,10 @@ class HotFixParser extends DefaultTask {
 //	static Logger buildLogger = LoggerFactory.getLogger(HotFixParser.class)
 	static String param_start_revision = 'sRevision'
 	static String param_end_revision = 'eRevision'
-		
 	def hotFixModel
 	
 	@TaskAction
 	void parse() {
-		def components = [:]
-		
-		components.put(hotFixModel.java.name, hotFixModel.java)
-		components.put(hotFixModel.resource.name, hotFixModel.resource)
-		components.put(hotFixModel.webapp.name, hotFixModel.webapp)
-		hotFixModel.ext.components = components
 		
 		SCMService scmService
 		ProjectSCM scmInfo
@@ -72,50 +65,13 @@ class HotFixParser extends DefaultTask {
 			scmlog = scmService.getLog(scmInfo, '0', null, project.projectDir.path - project.rootDir.path)
 		}else {
 			File localConfigureFile = new File("${project.projectDir}/hotFix.txt")
-			buildLogger.debug('read loacl config file:\n{}.', localConfigureFile.path)
+			buildLogger.debug('read loacl config file: {}.', localConfigureFile.path)
 			scmlog = new SCMLog()
 			localConfigureFile.eachLine('UTF-8'){
 				scmlog.addPath(it)
 			}
 		}
-		
-		
+		hotFixModel.ext.scmlog = scmlog
 //		buildLogger.quiet("log:{}",scmlog)
-		def ignoreFiles = []
-		scmlog.pathSet.each { 
-			it = it.replaceAll("\\\\", '/');
-			boolean isIgnore = true
-			for (component in hotFixModel.components.values()) {
-				def index = it.indexOf(component.source)
-				if(index > 0 && it.indexOf("${project.projectDir.name}/${component.source}" ) == -1) {
-					//比如/g-fileload/src/main/java/..java,而执行命令是在g-web工程下，将忽悠其他工程目录的修改
-					//排除非本工程的path
-					buildLogger.quiet('ignore->index:{},path:{} [name:{},source:{}]', index, it, component.name, component.source)
-					ignoreFiles << it
-					break
-				}
-				
-				if(index > -1 ) {
-					isIgnore = false
-					buildLogger.quiet('add->index:{},path:{} [name:{},source:{}]', index, it, component.name, component.source)
-					//FIXME: 判断是否是在excludes列表中
-					if(it.length() > (index + component.source.length())) {
-						component.addHotFixFile(it.substring(index + component.source.length() + 1, it.length()))
-					}
-					break
-				}
-			}
-			if(isIgnore) {
-				ignoreFiles << it
-				buildLogger.quiet('ignore->index:{},path:{}', -1, it)
-			}
-		}
-		
-		buildLogger.quiet('parse local config file complete.')
-		buildLogger.quiet('ignore {} files:\n{}', ignoreFiles.size(), ignoreFiles)
-//		buildLogger.quiet('component:{}', ignoreFiles.size(), ignoreFiles)
-		hotFixModel.components.each {key,value ->
-			buildLogger.quiet('component -> {}', value.dump())
-		}
 	}
 }

@@ -20,10 +20,13 @@ class HotFixGenerator extends DefaultTask {
 		//delete target directory if exist
 		project.delete(hotFixModel.targetDir)
 		hotFixModel.components.each {key, component->
+		buildLogger.quiet('generate hotfix by component')
 			if(!component.hotFixFileSet.empty) {
-				buildLogger.quiet('generate hotfix -> {}', component.name)
+				buildLogger.quiet('======== component ========')
 				buildLogger.quiet(component.dump())
+				buildLogger.quiet('===========================')
 				project.copy {
+					// 若processSource没设置代表不会有编译等文件处理过程，那么直接使用source目录
 					from component.processSource ? component.processSource: component.source, {
 						exclude component.excludes
 					}

@@ -26,7 +26,7 @@ public class SvnHistoryTest {
         /*
          * Default values:
          */
-        String url = "http://www.svnchina.com/svn/sprite/";
+        String url = "http://www.svnchina.com/svn/gradle_plugin_test";
         String name = "testyss";
         String password = "testyss";
         long startRevision = 0;

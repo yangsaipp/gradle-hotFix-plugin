@@ -20,63 +20,113 @@ class HotFixProcessor extends DefaultTask {
 	def hotFixModel
 	
 	def static DEFAULT_PROCESS_TYPE = [
-			java:[processType:'java',
-					process:{processor, component->
+			java:[
+				perfectComponent:{processor, component->
 						def project = processor.project
 						def hotFixModel = processor.hotFixModel
-						if(!(component.processSource?.trim())) {
-							if(project.plugins.hasPlugin(org.gradle.api.plugins.JavaPlugin.class)) {
-								component.processSource = project.sourceSets.main.output.classesDir
-								component.output = "${hotFixModel.targetDir}/WEB-INF/classes"
-								buildLogger.debug('set java component compile source and output')
-							}
+						if(project.plugins.hasPlugin(org.gradle.api.plugins.JavaPlugin.class)) {
+							HotFixUtil.setStringValueIfBlank(component, 'source', 'src/main/java')
+							HotFixUtil.setStringValueIfBlank(component, 'processSource', project.sourceSets.main.output.classesDir)
+							HotFixUtil.setStringValueIfBlank(component, 'output', "${hotFixModel.targetDir}/WEB-INF/classes")
 						}
+					},
+				process:{ processor, component->
+						def project = processor.project
+						def hotFixModel = processor.hotFixModel
 						Set fileSet = []
+						// java编译任务已经运行完
 						component.hotFixFileSet.each {
 							def classFileName = it.replaceAll('java$', 'class')
 							fileSet << classFileName
 						}
 						component.hotFixFileSet = fileSet
-//						FIXME 依赖task jar
 					}
 				],
-			resource:[processType:'resource',
-						process:{processor, component->
-							def project = processor.project
-							def hotFixModel = processor.hotFixModel
-							if(!(component.processSource?.trim())) {
-								if(project.plugins.hasPlugin(org.gradle.api.plugins.JavaPlugin.class)) {
-									component.processSource = project.sourceSets.main.output.resourcesDir
-									component.output = "${hotFixModel.targetDir}/WEB-INF/classes"
-									buildLogger.debug('set resource component compile source and output')
-								}
-							}
-						}
-					],
-			webapp:[processType:'webapp',
-					process:{processor, component->
+			resource:[
+				perfectComponent:{ processor, component->
 						def project = processor.project
 						def hotFixModel = processor.hotFixModel
+						if(project.plugins.hasPlugin(org.gradle.api.plugins.JavaPlugin.class)) {
+							HotFixUtil.setStringValueIfBlank(component, 'source', 'src/main/resources')
+							HotFixUtil.setStringValueIfBlank(component, 'processSource', project.sourceSets.main.output.resourcesDir)
+							HotFixUtil.setStringValueIfBlank(component, 'output', "${hotFixModel.targetDir}/WEB-INF/classes")
+						}
+					}
+				],
+			webapp:[
+				perfectComponent:{ processor, component->
+						def project = processor.project
+						def hotFixModel = processor.hotFixModel
+						// 设置source的默认值，webapp目录不会编译所以不需要设置processSource值
+						HotFixUtil.setStringValueIfBlank(component, 'source', 'src/main/webapp')
 						component.exclude('**/classes')
 						component.output = "${hotFixModel.targetDir}"
-						buildLogger.debug('set webapp component exclude and output')
 					}
 				]
 	]
 	
 	@TaskAction
 	void process() {
-		hotFixModel.components.each {key, component->
-			def sysProcessType = DEFAULT_PROCESS_TYPE.get(component.name)
-			if(sysProcessType) {
-				HotFixUtil.setStringValueIfBlank(component, 'processType', sysProcessType.processType)
-				if(DEFAULT_PROCESS_TYPE.get(component.processType)) {
-					DEFAULT_PROCESS_TYPE.get(component.processType).process(this,component)
+		def components = [:]
+		
+		components.put(hotFixModel.java.name, hotFixModel.java)
+		components.put(hotFixModel.resource.name, hotFixModel.resource)
+		components.put(hotFixModel.webapp.name, hotFixModel.webapp)
+		hotFixModel.ext.components = components
+		
+		// 完善HotFixComponent的属性
+		for (component in hotFixModel.components.values()) {
+			def sysProcessType = DEFAULT_PROCESS_TYPE.get(component.processType)
+			if(sysProcessType && sysProcessType.perfectComponent) {
+				sysProcessType.perfectComponent(this, component)
+			}
+			buildLogger.quiet('perfected Component : {}', component.dump())
+		}
+		
+		// 遍历changeFileSet，识别java、resource、webapp文件，并进行对应的处理
+		def scmlog = hotFixModel.scmlog
+		def ignoreFiles = []	// 不处理的变更文件
+		scmlog.pathSet.each {
+			it = it.replaceAll("\\\\", '/');
+			boolean isIgnore = true
+			for (component in hotFixModel.components.values()) {
+				def index = it.indexOf(component.source)
+				if(index > 0 && it.indexOf("${project.projectDir.name}/${component.source}" ) == -1) {
+					//比如/g-fileload/src/main/java/..java,而执行命令是在g-web工程下，将忽悠其他工程目录的修改
+					//排除非本工程的变更文件
+					buildLogger.quiet('ignore file -> index={}, path={}, [name={},source={}]', index, it, component.name, component.source)
+					ignoreFiles << it
+					break
+				}
+				
+				if(index > -1) {
+					isIgnore = false
+					buildLogger.quiet('add file -> index={}, path={}, [name={},source={}]', index, it, component.name, component.source)
+					//FIXME: 判断是否是在excludes列表中
+					//FIXME: 判断对应文件是否存在
+					if(it.length() > (index + component.source.length())) {
+						component.addHotFixFile(it.substring(index + component.source.length() + 1, it.length()))
+					}
+					break
 				}
 			}
-			//FIXME 执行用户自定义的闭包方法
-			buildLogger.quiet('process component[name={}] complete', component.name)
-			buildLogger.quiet("component -> {}", component.dump())
+			if(isIgnore) {
+				ignoreFiles << it
+				buildLogger.quiet('ignore file -> index = {}, path={}', -1, it)
+			}
+		}
+		buildLogger.quiet('ignore {} files: {}', ignoreFiles.size(), ignoreFiles)
+		
+		hotFixModel.components.each {key, component->
+			def sysProcessType = DEFAULT_PROCESS_TYPE.get(component.processType)
+			if(sysProcessType && sysProcessType.process) {
+				sysProcessType.process(this, component)
+			}
+			// 执行用户自定义的闭包方法
+//			if(component.process) {
+//				component.process(component);
+//			}
+			buildLogger.quiet('processed component: name = {}, hotFixFileSet = {}', component.name, component.hotFixFileSet)
 		}
 	}
 }
