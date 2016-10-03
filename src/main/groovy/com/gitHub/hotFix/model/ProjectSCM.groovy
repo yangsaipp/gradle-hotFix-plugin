@@ -11,11 +11,13 @@ import org.gradle.plugins.ide.eclipse.model.EclipseWtp;
  * apply plugin: 'java'
  *
  * hotFix {
+ * 	 ..
  *   svn {
  *   	url = 'http:...'
  *   	username = 'test'
  *   	password = 'test'
  *   }
+ *   ...
  * }
  * </pre>
  */
@@ -23,34 +25,72 @@ class ProjectSCM {
 	/**
 	 * 仓库访问地址
 	 * <p>
-	 * See {@link ProjectRepository} for an example.
+	 * See {@link ProjectSCM} for an example.
 	 */
 	String url
 	
 	/**
 	 * 访问用户名
 	 * <p>
-	 * See {@link ProjectRepository} for an example.
+	 * See {@link ProjectSCM} for an example.
 	 */
 	String username
 	
 	/**
 	 * 访问密码
 	 * <p>
-	 * See {@link ProjectRepository} for an example.
+	 * See {@link ProjectSCM} for an example.
 	 */
 	String password
 	
 	/**
 	 * SCM工作目录
 	 * <p>
-	 * See {@link ProjectRepository} for an example.
+	 * See {@link ProjectSCM} for an example.
 	 */
 	String workingPath
 	
+	/**
+	 * SCM类型  git, svn, local
+	 */
+	String type
+	
+	/**
+	 * 从本地文件中读取
+	 *
+	 * <pre autoTested=''>
+	 * apply plugin: 'java'
+	 *
+	 * hotFix {
+	 * 	 ..
+	 *   local {
+	 *   	location = 'hotFix.txt'
+	 *   }
+	 *   ...
+	 * }
+	 * </pre>
+	 */
+	String location
+	
+	boolean isSVN() {
+		return type == 'svn';
+	}
+	
+	boolean isLocal() {
+		return type == 'local';
+	}
+	
+	boolean isGIT() {
+		return type == 'git';
+	}
+	
 	@Override
 	String toString() {
-		return "[url：${this.url}\n,username：${this.username}\n,password：${this.password}\n,workingPath:${this.workingPath}]"
+		if(local) {
+			return "type=${this.type}, location=${location}"
+		}else {
+			return "type=${this.type}, url=${this.url}, username=${this.username}, password=${this.password}, workingPath=${this.workingPath}"
+		}
 	}
 	
 }

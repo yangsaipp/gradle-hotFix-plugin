@@ -6,6 +6,7 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 
 import com.gitHub.hotFix.model.ProjectSCM
+import com.gitHub.hotFix.scm.LoaclServiceImpl
 import com.gitHub.hotFix.scm.SCMService
 import com.gitHub.hotFix.scm.git.GitServiceImpl
 import com.gitHub.hotFix.scm.model.ChangeFileSet
@@ -35,7 +36,7 @@ class HotFixParser extends DefaultTask {
 	void parse() {
 		
 		SCMService scmService
-		ProjectSCM scmInfo
+		ProjectSCM scmInfo = hotFixModel.projectSCM
 		ChangeFileSet changeFileSet
 		String startRevision
 		String endRevision
@@ -45,9 +46,13 @@ class HotFixParser extends DefaultTask {
 		if(project.hasProperty(param_end_revision)) {
 			endRevision = project.property(param_end_revision)
 		}
-		if(hotFixModel.svn) {
+		
+		if(scmInfo.isLocal()) {
+			scmService = new LoaclServiceImpl()
+			scmInfo.location = "${project.projectDir}/${scmInfo.location}";
+			changeFileSet = scmService.getChangeFileSet(scmInfo, startRevision, endRevision, null)
+		}else if(scmInfo.isSVN()) {
 			scmService = new SVNServiceImpl()
-			scmInfo = hotFixModel.svn
 			//获取当前project工程文件夹名到working path的相对路径，用于查询对应目录的日志
 			scmInfo.workingPath = project.rootProject.projectDir.path
 			if(!startRevision) {
@@ -57,21 +62,13 @@ class HotFixParser extends DefaultTask {
 				endRevision = '-1'
 			}
 			//FIXME:targetpath处理问题，如复杂工程结构：/root、/root/project1、/root/project1/project1.1
-			String targetpath =  project.rootProject == project ? '' : project.projectDir.name 
+			String targetpath =  project.rootProject == project ? '' : project.projectDir.name
 			changeFileSet = scmService.getChangeFileSet(scmInfo, startRevision, endRevision, project.projectDir.name)
-		}else if(hotFixModel.git) {
+		}else if(scmInfo.isGIT()) {
 			scmService = new GitServiceImpl()
-			scmInfo = hotFixModel.git
-			changeFileSet = scmService.getChangeFileSet(scmInfo, '0', null, project.projectDir.path - project.rootDir.path)
-		}else {
-			File localConfigureFile = new File("${project.projectDir}/hotFix.txt")
-			buildLogger.debug('read loacl config file: {}.', localConfigureFile.path)
-			changeFileSet = new ChangeFileSet()
-			localConfigureFile.eachLine('UTF-8'){
-				changeFileSet.addPath(it)
-			}
+			String targetpath =  project.rootProject == project ? '' : project.projectDir.name
+			changeFileSet = scmService.getChangeFileSet(scmInfo, startRevision, endRevision, project.projectDir.name)
 		}
 		hotFixModel.ext.changeFileSet = changeFileSet
-//		buildLogger.quiet("log:{}",scmlog)
 	}
 }

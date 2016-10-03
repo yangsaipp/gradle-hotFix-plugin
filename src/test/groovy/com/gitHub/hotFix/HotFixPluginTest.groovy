@@ -9,9 +9,10 @@ class HotFixPluginTest {
 	@Test
 	public void greeterPluginAddsGreetingTaskToProject() {
 		Project project = ProjectBuilder.builder().build()
+		project.pluginManager.apply 'java'
 		project.pluginManager.apply 'hotFix'
 
 //		assertTrue(project.tasks.hello instanceof HotFixPlugin)
-//		project.tasks.hotFixParse.execute()
+		project.tasks.hotFixGenerate.execute()
 	}
 }

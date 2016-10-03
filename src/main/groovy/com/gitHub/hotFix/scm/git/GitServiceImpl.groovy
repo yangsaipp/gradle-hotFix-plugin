@@ -8,9 +8,9 @@ class GitServiceImpl implements SCMService {
 
 	@Override
 	public ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, String startRevision, String endRevision, String targetPath) {
-		ChangeFileSet changeFileSet = new ChangeFileSet()
-		// TODO Auto-generated method stub
-		return changeFileSet;
+		throw new RuntimeException("读取git日志信息获取变更文件信息暂未实现，请使用本地文件配置的方法来生成增量");
+//		ChangeFileSet changeFileSet = new ChangeFileSet()
+//		return changeFileSet;
 	}
 
 }

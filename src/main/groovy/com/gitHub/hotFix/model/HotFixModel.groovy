@@ -13,26 +13,24 @@ class HotFixModel {
 	 */
 	String targetDir = 'build/hotFix/' + new Date().format('yyyy-MM-dd_HHmm')
 
-	ProjectSCM git
-	ProjectSCM svn
+	ProjectSCM projectSCM = new ProjectSCM(location: 'hotFix.txt', type:'local')
 
 	HotFixComponent java = new HotFixComponent(name: 'java', processType: 'java')
 	HotFixComponent resource = new HotFixComponent(name: 'resource', processType: 'resource')
 	HotFixComponent webapp = new HotFixComponent(name: 'webapp', processType: 'webapp')
 	
+	void local(Closure closure) {
+		ConfigureUtil.configure(closure, projectSCM)
+	}
 	
 	void git(Closure closure) {
-		if(!git) {
-			git = new ProjectSCM()
-		}
-        ConfigureUtil.configure(closure, git)
+		projectSCM = new ProjectSCM(type:'git')
+        ConfigureUtil.configure(closure, projectSCM)
     }
 	
 	void svn(Closure closure) {
-		if(!svn) {
-			svn = new ProjectSCM()
-		}
-		ConfigureUtil.configure(closure, svn)
+		projectSCM = new ProjectSCM(type:'svn')
+		ConfigureUtil.configure(closure, projectSCM)
 	}
 	
 	void java(Closure closure) {
@@ -49,20 +47,9 @@ class HotFixModel {
 	
 	void dumps() {
 		println targetDir
-		if(git){
-			println "git:[${git.toString()}]"
-		}
-		if(svn){
-			println "svn:[${svn.toString()}]"
-		}
-		if(java){
-			println "java:[${java.toString()}]"
-		}
-		if(resource){
-			println "source:[${resource.toString()}]"
-		}
-		if(webapp){
-			println "webapp:[${webapp.toString()}]"
-		}
+		println projectSCM
+		println "java:[${java.toString()}]"
+		println "source:[${resource.toString()}]"
+		println "webapp:[${webapp.toString()}]"
 	}
 }

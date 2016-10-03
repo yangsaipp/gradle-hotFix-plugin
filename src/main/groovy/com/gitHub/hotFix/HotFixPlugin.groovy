@@ -28,10 +28,7 @@ class HotFixPlugin implements Plugin<Project> {
 		configureProcessTask(project, model)
 		configureGenerateTask(project, model)
 		println 'apply project hotfix'
-		println model
-		project.task('hotFixDump') << {
-			println model.dumps()
-		}
+		println model.dumps()
 	}
 	
 	private Task configureGenerateTask(Project project, HotFixModel model) {
