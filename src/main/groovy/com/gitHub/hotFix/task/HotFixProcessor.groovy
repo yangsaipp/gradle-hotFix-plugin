@@ -131,9 +131,9 @@ class HotFixProcessor extends DefaultTask {
 				sysProcessType.process(this, component)
 			}
 			// 执行用户自定义的闭包方法
-//			if(component.process) {
-//				component.process(component);
-//			}
+			if(component.process) {
+				component.process(component, ignoreFiles);
+			}
 			buildLogger.quiet('processed component: name = {}, hotFixFileSet = {}', component.name, component.hotFixFileSet)
 		}
 	}

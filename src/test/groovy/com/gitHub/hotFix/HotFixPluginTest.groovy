@@ -49,6 +49,7 @@ class HotFixPluginTest extends PluginProjectSpec{
 		
 		def changeWebappFile = ['index2.jsp','WEB-INF/web.xml']
 		def noExistsWebappFile = ['index1.jsp']
+		def callJavaProcessTimes = 0
 		
 		def targetDir = "build/hotFix/${project.name}_hotfix_"+ new Date().format('yyyy-MM-dd_HHmm')
 		// 定义hotFix配置参数
@@ -59,6 +60,9 @@ class HotFixPluginTest extends PluginProjectSpec{
 			}
 			java {
 				exclude '**/test/GradleCopy.java'
+				process { javaComp, ignoreFiles ->
+					callJavaProcessTimes ++ 
+				}
 			}
 			resource {
 				exclude 'spring/spring.xml'
@@ -88,6 +92,8 @@ class HotFixPluginTest extends PluginProjectSpec{
 		webappExits(changeWebappFile[0])
 		!webappExits(changeWebappFile[1])
 		!webappExits(noExistsWebappFile[0])
+		
+		callJavaProcessTimes == 1
 	}
 	
 	def eHotFixGenerate() {

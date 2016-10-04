@@ -1,5 +1,7 @@
 package com.gitHub.hotFix.model
 
+import groovy.lang.Closure;
+
 /**
  * hotFix组件，一个hotFix组件至少包含来源、输出目录，一次hotFix可以有多个hotFix组件
  * @author yangsai
@@ -23,6 +25,12 @@ class HotFixComponent {
 	 * 类型，主要在process阶段使用，目前可配置值为：java、resource、webapp
 	 */
 	String processType
+	
+	/**
+	 * 用户自定义处理闭包对象
+	 */
+	Closure process
+	
 	/**
 	 * 排除文件
 	 */
@@ -37,6 +45,11 @@ class HotFixComponent {
 	 * hotfix输出目录
 	 */
 	String output
+	
+	
+	void process(Closure closure) {
+		this.process = closure
+	}
 	
 	void exclude(String exclude) {
 		if(exclude.indexOf(',')) {
