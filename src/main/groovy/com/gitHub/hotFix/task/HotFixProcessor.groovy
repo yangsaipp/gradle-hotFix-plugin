@@ -36,10 +36,18 @@ class HotFixProcessor extends DefaultTask {
 						Set fileSet = []
 						// java编译任务已经运行完
 						component.hotFixFileSet.each {
-							def classFileName = it.replaceAll('java$', 'class')
+							def classFileName = it.replaceAll('.java$', '.class')
 							fileSet << classFileName
 						}
 						component.hotFixFileSet = fileSet
+						
+						Set excludes = []
+						// java编译任务已经运行完
+						component.excludes.each {
+							def classFileName = it.replaceAll('.java$', '.class')
+							excludes << classFileName
+						}
+						component.excludes = excludes
 					}
 				],
 			resource:[

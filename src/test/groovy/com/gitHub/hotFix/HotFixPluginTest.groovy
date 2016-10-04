@@ -58,9 +58,9 @@ class HotFixPluginTest extends PluginProjectSpec{
 			local {
 				location =  file
 			}
-//			resource {
-//				source =
-//			}
+			java {
+				exclude 'org/test/GradleCopy.java'
+			}
 		}
 		
 		writeChangeJavaFile(file, changeJavaFile)
@@ -75,7 +75,7 @@ class HotFixPluginTest extends PluginProjectSpec{
 		project.file(project.hotFix.targetDir).exists()
 		
 		javaExits(changeJavaFile[0])
-		javaExits(changeJavaFile[1])
+		!javaExits(changeJavaFile[1])
 		
 		resourceExits(changeResourceFile[0])
 		resourceExits(changeResourceFile[1])
