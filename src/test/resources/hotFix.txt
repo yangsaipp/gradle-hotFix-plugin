@@ -1,0 +1,6 @@
+src\main\java\org\gradle\sample\Greeter.java
+src\main\java\org\gradle\GradleCopy.java
+src\main\resources\greeting.txt
+src\main\resources\gradleCopy.xml
+src\main\webapp\WEB-INF\web.xml
+src\main\webapp\index.jsp

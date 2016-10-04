@@ -1,0 +1,7 @@
+package org.gradle.sample;
+
+public class GradleCopy {
+    public void getGreeting() {
+        System.out.println("hotFix");
+    }
+}

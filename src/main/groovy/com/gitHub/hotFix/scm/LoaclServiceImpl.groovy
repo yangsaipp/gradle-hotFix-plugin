@@ -12,7 +12,7 @@ class LoaclServiceImpl implements SCMService {
 	@Override
 	public ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, String startRevision, String endRevision, String targetPath) {
 		ChangeFileSet changeFileSet = new ChangeFileSet()
-		File localConfigureFile = new File(scmInfo.location);
+		File localConfigureFile = scmInfo.location;
 		buildLogger.debug('read loacl config file: {}.', localConfigureFile.path)
 		if(localConfigureFile.exists()) {
 			changeFileSet = new ChangeFileSet()

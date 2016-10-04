@@ -49,7 +49,9 @@ class HotFixParser extends DefaultTask {
 		
 		if(scmInfo.isLocal()) {
 			scmService = new LoaclServiceImpl()
-			scmInfo.location = "${project.projectDir}/${scmInfo.location}";
+			if(scmInfo.location instanceof String) {
+				scmInfo.location = project.file(scmInfo.location);
+			}
 			changeFileSet = scmService.getChangeFileSet(scmInfo, startRevision, endRevision, null)
 		}else if(scmInfo.isSVN()) {
 			scmService = new SVNServiceImpl()

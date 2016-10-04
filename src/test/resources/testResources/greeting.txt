@@ -1,0 +1,2 @@
+hello Gradle
+LogManager.getRootLogger().info("get inputstream.----greeting");

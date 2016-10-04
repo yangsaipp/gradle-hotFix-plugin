@@ -70,7 +70,7 @@ class ProjectSCM {
 	 * }
 	 * </pre>
 	 */
-	String location
+	def location
 	
 	boolean isSVN() {
 		return type == 'svn';

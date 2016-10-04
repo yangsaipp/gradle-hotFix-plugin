@@ -27,8 +27,8 @@ class HotFixPlugin implements Plugin<Project> {
 		configureParseTask(project, model)
 		configureProcessTask(project, model)
 		configureGenerateTask(project, model)
-		println 'apply project hotfix'
-		println model.dumps()
+//		println 'apply project hotfix'
+//		println model.dumps()
 	}
 	
 	private Task configureGenerateTask(Project project, HotFixModel model) {
@@ -46,7 +46,7 @@ class HotFixPlugin implements Plugin<Project> {
 			hotFixModel = model
 			dependsOn TASK_PARSE
 			if(project.plugins.hasPlugin(org.gradle.api.plugins.JavaPlugin.class)) {
-				dependsOn 'jar'
+				dependsOn 'classes'
 			}
 		}
 	}
