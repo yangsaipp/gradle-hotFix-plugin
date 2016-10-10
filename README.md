@@ -1,4 +1,8 @@
 # gradle-hotFix-plugin
+Gradle增量自动生成插件，顾名思义是基于Gradle而开发的插件，目的在于准确、高效生成的增量。
+
+发布增量是一个高频率事件，增量包是把修改的文件按照其所在目录依次创建对应目录然后存放，一般增量包是手动整理或者使用一些简单脚本（每次生成都要修改配置），效率不高且容易出错，Gradle增量自动生成正是为解决这个问题而开发 ，使用它只需一次配置，每次生成增量运行命令就可以生成增量。
+
 gradle-hotFix-plugin，可以读取svn提交记录获取对应变更文件生成增量，主要针对java项目，配置简单，使用方便。
 
 ## 入门
@@ -6,20 +10,19 @@ gradle-hotFix-plugin，可以读取svn提交记录获取对应变更文件生成
 必要：工程里使用java插件且相关任务如jar等能正常使用。
 
 #### 第一步：引入hotFix插件
-引入hotFix插件
+在build.xml里引入hotFix插件
 
 	apply plugin: 'java'
 	//引入hotFix插件
     apply plugin: 'hotFix'	
 
-配置插件使用的依赖jar
+配置插件使用的依赖jar，注意是配置在`buildscript`块中
 
     ...
 	buildscript {
 		repositories {
 			mavenLocal()
-			//maven { url 'http://repo1.maven.org/maven2' }
-			mavenCentral()
+			maven { url 'http://10.10.50.24:8081/nexus/content/repositories/snapshots' }
 		}
 		
 		dependencies {
@@ -58,8 +61,8 @@ gradle-hotFix-plugin，可以读取svn提交记录获取对应变更文件生成
 key | default | description
 ----|---------|------------
 `targetDir` | 'build/hotFix/yyyy-MM-dd_HHmm' | 增量生成存放的目录
-`local` |  | 使用读取本地配置文件获取变更文件列表的方式生成增量，`local`和`svn`只能配置一种
-`svn` |  | 使用svn的提交log获取变更文件列表的方式生成增量，`local`和`svn`只能配置一种
+`local` |  | 使用自定义变更文件的配置方式生成增量，`local`和`svn`只能配置一种
+`svn` |  | 使用svn的提交log配置方式生成增量，`local`和`svn`只能配置一种
 `java` |  | java代码相关配置
 `resource` |  | 项目资源文件相关配置
 `webapp` |  | web资源文件相关配置
@@ -69,7 +72,7 @@ key | default | description
 
 key | default | description
 ----|---------|------------
-`location` | hotFix.txt | 本地配置文件存放路径，UTF-8编码，默认值为项目根目录下`hotFix.txt`文件。
+`location` | hotFix.txt | 记录自定义变更文件的配置文件存放路径，UTF-8编码，默认值为项目根目录下`hotFix.txt`文件。
 
 例:
 
@@ -83,7 +86,7 @@ key | default | description
 	}
 	...
 
-`myHotFix.txt`内容：
+`myHotFix.txt`内容（一个文件路径占一行）：
 
     src\main\java\org\gradle\sample\Greeter.java
 	src\main\java\org\gradle\GradleCopy.java
