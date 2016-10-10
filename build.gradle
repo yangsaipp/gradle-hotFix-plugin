@@ -8,7 +8,7 @@ version = '1.0-SNAPSHOT'
 repositories {
 	mavenLocal()
 	maven{
-		url "http://10.10.50.24:8081/nexus/content/groups/public/"
+		url "http://10.10.50.24:8081/nexus/content/groups/public"
 	}
 	mavenCentral()
 }

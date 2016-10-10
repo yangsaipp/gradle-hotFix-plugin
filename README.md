@@ -22,7 +22,7 @@ gradle-hotFix-plugin，可以读取svn提交记录获取对应变更文件生成
 	buildscript {
 		repositories {
 			mavenLocal()
-			maven { url 'http://10.10.50.24:8081/nexus/content/repositories/snapshots' }
+			maven { url 'http://10.10.50.24:8081/nexus/content/groups/public' }
 		}
 		
 		dependencies {
