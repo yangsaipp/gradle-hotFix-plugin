@@ -19,7 +19,7 @@ class HotFixPlugin implements Plugin<Project> {
 	
 	static final String TASK_PARSE = "hotFixParse"
 	static final String TASK_PROCESS = "hotFixProcess"
-	static final String TASK_GENERATE = "HotFixGenerate"
+	static final String TASK_GENERATE = "HotFix"
 	
 	@Override
 	public void apply(Project project) {

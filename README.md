@@ -48,7 +48,7 @@ gradle-hotFix-plugin，可以读取svn提交记录获取对应变更文件生成
 #### 第三步：运行命令生成增量
 运行以下命令
 
-    gradlew hotFixGenerate -PsRevision=svnStartNum -PeRevision=svnEndNum
+    gradlew HotFix -Pstart=svnStartNum -Pend=svnEndNum
 
 `svnStartNum`、`svnEndNum`是svn的版本号，以上命令会将svn版本号为`svnStartNum`到`svnEndNum`这之间的变更文件提取生成增量。PeRevision参数可选，若不配置则表示到最新版本。
 
@@ -95,7 +95,7 @@ key | default | description
 	src\main\webapp\WEB-INF\web.xml
 	src\main\webapp\index.jsp
 
-说明： 使用该配置方式运行命令`gradlew hotFixGenerate`即可，无需指定`-PsRevision` 和 `-PeRevision`参数
+说明： 使用该配置方式运行命令`gradlew hotFix`即可，无需指定`-Pstart` 和 `-Pend`等参数
 
 #### svn 参数
 
@@ -181,3 +181,6 @@ key | default | description
 		...
 	}
 	...
+
+
+## 常见问题
