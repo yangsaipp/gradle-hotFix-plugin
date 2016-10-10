@@ -88,7 +88,7 @@ class HotFixProcessor extends DefaultTask {
 			if(sysProcessType && sysProcessType.perfectComponent) {
 				sysProcessType.perfectComponent(this, component)
 			}
-			buildLogger.quiet('perfected component : {}', component.dump())
+			buildLogger.debug('perfected component : {}', component.dump())
 		}
 		
 		// 遍历changeFileSet，识别java、resource、webapp文件，并进行对应的处理
@@ -102,14 +102,14 @@ class HotFixProcessor extends DefaultTask {
 				if(index > 0 && it.indexOf("${project.projectDir.name}/${component.source}" ) == -1) {
 					//比如/g-fileload/src/main/java/..java,而执行命令是在g-web工程下，将忽悠其他工程目录的修改
 					//排除非本工程的变更文件
-					buildLogger.quiet('ignore file -> index={}, path={}, [name={},source={}]', index, it, component.name, component.source)
+					buildLogger.debug('ignore file -> index={}, path={}, [name={},source={}]', index, it, component.name, component.source)
 					ignoreFiles << it
 					break
 				}
 				
 				if(index > -1) {
 					isIgnore = false
-					buildLogger.quiet('add file -> index={}, path={}, [name={},source={}]', index, it, component.name, component.source)
+					buildLogger.debug('add file -> index={}, path={}, [name={},source={}]', index, it, component.name, component.source)
 					//FIXME: 判断是否是在excludes列表中
 					//FIXME: 判断对应文件是否存在
 					if(it.length() > (index + component.source.length())) {
@@ -120,10 +120,10 @@ class HotFixProcessor extends DefaultTask {
 			}
 			if(isIgnore) {
 				ignoreFiles << it
-				buildLogger.quiet('ignore file -> index = {}, path={}', -1, it)
+				buildLogger.debug('ignore file -> index = {}, path={}', -1, it)
 			}
 		}
-		buildLogger.quiet('ignore {} files: {}', ignoreFiles.size(), ignoreFiles)
+		buildLogger.debug('ignore {} files: {}', ignoreFiles.size(), ignoreFiles)
 		
 		hotFixModel.components.each {key, component->
 			def sysProcessType = DEFAULT_PROCESS_TYPE.get(component.processType)
@@ -134,7 +134,7 @@ class HotFixProcessor extends DefaultTask {
 			if(component.process) {
 				component.process(component, ignoreFiles);
 			}
-			buildLogger.quiet('processed component: name = {}, hotFixFileSet = {}', component.name, component.hotFixFileSet)
+			buildLogger.debug('processed component: name = {}, hotFixFileSet = {}', component.name, component.hotFixFileSet)
 		}
 	}
 }
