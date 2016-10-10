@@ -28,7 +28,7 @@ class SVNClientTest {
 	}
 	
 	//获取svn客户端信息 "d:/Program Files/eclipse4.4/workspace/svnTest/ysTest1"
-	SVNInfo getSVNInfo(String workingPath) {
+	static SVNInfo getSVNInfo(String workingPath) {
 		SVNWCClient client = SVNClientManager.newInstance().getWCClient();
 		SVNInfo info = null;
 		try {
@@ -40,5 +40,10 @@ class SVNClientTest {
 		System.out.println(url);
 		return info
 	}
+	
+	public static void main(String[] arg) {
+		getSVNInfo('e:\\Workspaces\\workspace_java\\gradle_plugin_test');
+	}
+	
 	
 }

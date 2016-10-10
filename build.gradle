@@ -7,8 +7,10 @@ version = '1.0-SNAPSHOT'
 
 repositories {
 	mavenLocal()
-	maven{
-		url "http://10.10.50.24:8081/nexus/content/groups/public"
+	if(project.hasProperty('comtopReUser')) {
+		maven{
+			url "http://10.10.50.24:8081/nexus/content/groups/public"
+		}
 	}
 	mavenCentral()
 }
@@ -40,12 +42,14 @@ publishing {
 		}
 	}
 	repositories {	// 运行publish命令
-		maven {
-			name 'comtopRepository'
-			url "http://10.10.50.24:8081/nexus/content/repositories/snapshots"
-			credentials {
-				username comtopReUser
-				password comtopRePass
+		if(project.hasProperty('comtopReUser')) {
+			maven {
+				name 'comtopRepository'
+				url "http://10.10.50.24:8081/nexus/content/repositories/snapshots"
+				credentials {
+					username comtopReUser
+					password comtopRePass
+				}
 			}
 		}
 	}

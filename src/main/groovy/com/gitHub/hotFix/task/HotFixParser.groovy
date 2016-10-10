@@ -5,6 +5,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.TaskAction
 
+import com.gitHub.hotFix.model.HotFixParameter;
 import com.gitHub.hotFix.model.ProjectSCM
 import com.gitHub.hotFix.scm.LoaclServiceImpl
 import com.gitHub.hotFix.scm.SCMService
@@ -27,50 +28,38 @@ import com.gitHub.hotFix.scm.svn.SVNServiceImpl
  */
 class HotFixParser extends DefaultTask {
 	static Logger buildLogger = Logging.getLogger(HotFixParser.class);
-//	static Logger buildLogger = LoggerFactory.getLogger(HotFixParser.class)
-	static String param_start_revision = 'sRevision'
-	static String param_end_revision = 'eRevision'
 	def hotFixModel
 	
 	@TaskAction
 	void parse() {
-		
 		SCMService scmService
 		ProjectSCM scmInfo = hotFixModel.projectSCM
 		ChangeFileSet changeFileSet
-		String startRevision
-		String endRevision
-		if(project.hasProperty(param_start_revision)) {
-			startRevision = project.property(param_start_revision)
-		}
-		if(project.hasProperty(param_end_revision)) {
-			endRevision = project.property(param_end_revision)
-		}
+		HotFixParameter paramer = new HotFixParameter(project)
 		
 		if(scmInfo.isLocal()) {
 			scmService = new LoaclServiceImpl()
 			if(scmInfo.location instanceof String) {
 				scmInfo.location = project.file(scmInfo.location);
 			}
-			changeFileSet = scmService.getChangeFileSet(scmInfo, startRevision, endRevision, null)
+			changeFileSet = scmService.getChangeFileSet(scmInfo, paramer, null)
 		}else if(scmInfo.isSVN()) {
 			scmService = new SVNServiceImpl()
 			//获取当前project工程文件夹名到working path的相对路径，用于查询对应目录的日志
 			scmInfo.workingPath = project.rootProject.projectDir.path
-			if(!startRevision) {
-				throw new RuntimeException("Please specify the SVN start revision. for example:gradle hotFixGenerate -P${param_start_revision}=2")
-			}
-			if(!endRevision) {
-				endRevision = '-1'
+			if(!paramer.startRevision) {
+				throw new RuntimeException("Please specify the SVN start revision. for example:gradle hotFixGenerate -P${HotFixParameter.START_REVISION}=2")
 			}
 			//FIXME:targetpath处理问题，如复杂工程结构：/root、/root/project1、/root/project1/project1.1
 			String targetpath =  project.rootProject == project ? '' : project.projectDir.name
-			changeFileSet = scmService.getChangeFileSet(scmInfo, startRevision, endRevision, project.projectDir.name)
+			changeFileSet = scmService.getChangeFileSet(scmInfo, paramer, project.projectDir.name)
 		}else if(scmInfo.isGIT()) {
 			scmService = new GitServiceImpl()
 			String targetpath =  project.rootProject == project ? '' : project.projectDir.name
-			changeFileSet = scmService.getChangeFileSet(scmInfo, startRevision, endRevision, project.projectDir.name)
+			changeFileSet = scmService.getChangeFileSet(scmInfo, paramer, project.projectDir.name)
 		}
 		hotFixModel.ext.changeFileSet = changeFileSet
+		
+		buildLogger.debug('complete parser changeFileSet : {}', changeFileSet.dump())
 	}
 }

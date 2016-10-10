@@ -3,6 +3,7 @@ package com.gitHub.hotFix.scm
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import com.gitHub.hotFix.model.HotFixParameter;
 import com.gitHub.hotFix.model.ProjectSCM
 import com.gitHub.hotFix.scm.model.ChangeFileSet
 
@@ -10,7 +11,7 @@ class LoaclServiceImpl implements SCMService {
 	
 	static Logger buildLogger = Logging.getLogger(LoaclServiceImpl.class);
 	@Override
-	public ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, String startRevision, String endRevision, String targetPath) {
+	public ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, HotFixParameter paramer, String targetPath) {
 		ChangeFileSet changeFileSet = new ChangeFileSet()
 		File localConfigureFile = scmInfo.location;
 		buildLogger.debug('read loacl config file: {}.', localConfigureFile.path)

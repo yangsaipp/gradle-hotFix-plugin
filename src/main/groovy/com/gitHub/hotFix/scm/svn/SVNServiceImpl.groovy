@@ -22,6 +22,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision
 import org.tmatesoft.svn.core.wc.SVNWCClient
 import org.tmatesoft.svn.core.wc.SVNWCUtil
 
+import com.gitHub.hotFix.model.HotFixParameter;
 import com.gitHub.hotFix.model.ProjectSCM
 import com.gitHub.hotFix.scm.SCMService
 import com.gitHub.hotFix.scm.model.ChangeFileSet
@@ -38,14 +39,15 @@ class SVNServiceImpl implements SCMService {
 	static Logger buildLogger = Logging.getLogger(SCMService.class);
 	
 	@Override
-	public ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, String startRevision, String endRevision, String targetPath) {
+	public ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, HotFixParameter paramer, String targetPath) {
 		String url = scmInfo.url
 		String name = scmInfo.username
 		String password = scmInfo.password
 		String workingPath = scmInfo.workingPath
-		long startR = startRevision as long
-		long endR = endRevision as long
-		
+		long startR = paramer.startRevision as long
+		long endR = paramer.endRevision ? paramer.endRevision as long : -1
+		// 指定用户名
+		String specifiedAuthor = paramer.get(HotFixParameter.AUTHOR) ? "${paramer.get(HotFixParameter.AUTHOR)}," : null
 		SVNRepository repository = null;
 		SVNURL svnUrl = null
 		try {
@@ -121,7 +123,8 @@ class SVNServiceImpl implements SCMService {
 			 * displaying all paths that were changed in that revision; cahnged
 			 * path information is represented by SVNLogEntryPath.
 			 */
-			if (logEntry.getChangedPaths().size() > 0) {
+			// 过滤提交者，只搜集指定提交者的变更记录
+			if (logEntry.getChangedPaths().size() > 0 && filterAuthor(logEntry.getAuthor(), specifiedAuthor)) {
 //				System.out.println();
 //				System.out.println("changed paths:");
 				/*
@@ -130,7 +133,6 @@ class SVNServiceImpl implements SCMService {
 				Set changedPathsSet = logEntry.getChangedPaths().keySet();
 
 				for (Iterator changedPaths = changedPathsSet.iterator(); changedPaths.hasNext();) {
-					
 					SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths().get(changedPaths.next());
 					switch(entryPath.getType()) {
 						case SVNLogEntryPath.TYPE_ADDED:
@@ -153,6 +155,23 @@ class SVNServiceImpl implements SCMService {
 			}
 		}
 		return changeFileSet;
+	}
+	
+	/**
+	 * 是否为指定提交者， specifiedAuthor为null则不过滤
+	 * @param author
+	 * @param specifiedAuthor
+	 * @return true 是  false 不是
+	 */
+	private boolean filterAuthor(String author, String specifiedAuthor) {
+		buildLogger.debug('filter author : {} in specifiedAuthor : {}',author, specifiedAuthor);
+		if(specifiedAuthor) {
+			if(author) {
+				return specifiedAuthor.indexOf(author + ',') != -1
+			}
+			return false 
+		}
+		return true
 	}
 	
 	/*
