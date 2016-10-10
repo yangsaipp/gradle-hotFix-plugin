@@ -27,15 +27,26 @@ dependencies {
 	}
 }
 
-// upload to local
-uploadArchives {
-	repositories { mavenLocal() }
+task sourceJar(type: Jar) {
+  from sourceSets.main.allJava
+  classifier "sources"
 }
 
 publishing {
-	publications {
-		maven(MavenPublication) {
-			from components.java // ADD THIS LINE
+	publications {	
+		maven(MavenPublication) { // 运行publishToMavenLocal命令
+			from components.java
+			artifact sourceJar
+		}
+	}
+	repositories {	// 运行publish命令
+		maven {
+			name 'comtopRepository'
+			url "http://10.10.50.24:8081/nexus/content/repositories/snapshots"
+			credentials {
+				username comtopReUser
+				password comtopRePass
+			}
 		}
 	}
 }
@@ -43,8 +54,3 @@ publishing {
 task sysout << {
 	println GroovySystem.version.replaceAll(/\.\d+$/,'')
 }
-
-//多项目时增加依赖
-//rootProject.dependencies {
-//	runtime project(path)
-//}
