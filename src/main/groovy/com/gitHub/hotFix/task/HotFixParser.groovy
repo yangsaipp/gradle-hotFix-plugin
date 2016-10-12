@@ -59,6 +59,6 @@ class HotFixParser extends DefaultTask {
 		}
 		hotFixModel.ext.changeFileSet = changeFileSet
 		
-		buildLogger.quiet('complete parser changeFileSet : {}', changeFileSet.dump())
+		buildLogger.debug('complete parser changeFileSet : {}', changeFileSet.dump())
 	}
 }

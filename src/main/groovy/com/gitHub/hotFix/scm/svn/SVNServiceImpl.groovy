@@ -89,7 +89,7 @@ class SVNServiceImpl implements SCMService {
 		final Collection logEntries = new LinkedList();
 		try {
 			String[] targetPaths = targetPath ? [targetPath] : ['']
-			buildLogger.quiet("svn targetpath : ${targetPaths}")
+			buildLogger.debug("svn targetpath : ${targetPaths}")
 			repository.log(targetPaths, startR, endR, true, true, 0, true, null, new ISVNLogEntryHandler() {
 	            public void handleLogEntry(SVNLogEntry logEntry) {
 	                logEntries.add(logEntry);
