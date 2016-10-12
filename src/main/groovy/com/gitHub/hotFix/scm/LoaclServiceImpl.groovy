@@ -11,7 +11,7 @@ class LoaclServiceImpl implements SCMService {
 	
 	static Logger buildLogger = Logging.getLogger(LoaclServiceImpl.class);
 	@Override
-	public ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, HotFixParameter paramer, String targetPath) {
+	public ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, HotFixParameter paramer) {
 		ChangeFileSet changeFileSet = new ChangeFileSet()
 		File localConfigureFile = scmInfo.location;
 		buildLogger.debug('read loacl config file: {}.', localConfigureFile.path)

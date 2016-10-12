@@ -13,6 +13,6 @@ interface SCMService {
 	 * @param targetPath 需要获取log的path
 	 * @return
 	 */
-	ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, HotFixParameter paramer, String targetPath) 
+	ChangeFileSet getChangeFileSet(ProjectSCM scmInfo, HotFixParameter paramer) 
 	
 }

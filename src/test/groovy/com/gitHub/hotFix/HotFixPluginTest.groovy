@@ -52,9 +52,15 @@ class HotFixPluginTest extends PluginProjectSpec{
 		def callJavaProcessTimes = 0
 		
 		def targetDir = "build/hotFix/${project.name}_hotfix_"+ new Date().format('yyyy-MM-dd_HHmm')
+		project.ext.start = 2 
 		// 定义hotFix配置参数
 		project.hotFix {
 			targetDir = targetDir
+//			svn {
+//				url = 'https://7m0gp72.comtop.local/svn/testSVN/trunk/gradleTest'
+//				username = 'test2'
+//				password = 'test2'
+//			}
 			local {
 				location =  file
 			}

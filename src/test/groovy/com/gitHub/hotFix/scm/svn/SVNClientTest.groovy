@@ -42,7 +42,7 @@ class SVNClientTest {
 	}
 	
 	public static void main(String[] arg) {
-		getSVNInfo('e:\\Workspaces\\workspace_java\\gradle_plugin_test');
+		getSVNInfo('d:\\Code\\workspace\\gradleTest\\');
 	}
 	
 	

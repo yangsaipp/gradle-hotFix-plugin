@@ -51,15 +51,14 @@ class HotFixParser extends DefaultTask {
 				throw new RuntimeException("Please specify the SVN start revision. for example:gradle hotFixGenerate -P${HotFixParameter.START_REVISION}=2")
 			}
 			//FIXME:targetpath处理问题，如复杂工程结构：/root、/root/project1、/root/project1/project1.1
-			String targetpath =  project.rootProject == project ? '' : project.projectDir.name
-			changeFileSet = scmService.getChangeFileSet(scmInfo, paramer, project.projectDir.name)
+//			String targetpath =  project.rootProject == project ? '' : project.projectDir.name
+			changeFileSet = scmService.getChangeFileSet(scmInfo, paramer)
 		}else if(scmInfo.isGIT()) {
 			scmService = new GitServiceImpl()
-			String targetpath =  project.rootProject == project ? '' : project.projectDir.name
-			changeFileSet = scmService.getChangeFileSet(scmInfo, paramer, project.projectDir.name)
+			changeFileSet = scmService.getChangeFileSet(scmInfo, paramer)
 		}
 		hotFixModel.ext.changeFileSet = changeFileSet
 		
-		buildLogger.debug('complete parser changeFileSet : {}', changeFileSet.dump())
+		buildLogger.quiet('complete parser changeFileSet : {}', changeFileSet.dump())
 	}
 }

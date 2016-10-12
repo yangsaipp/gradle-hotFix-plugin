@@ -56,6 +56,13 @@ class ProjectSCM {
 	String type
 	
 	/**
+	 * 项目所在SCM根路径的相对路径， 用来过滤SCM的log信息<br>
+	 * 如：svn地址https://7m0gp72.comtop.local/svn/testSVN/，项目目录https://7m0gp72.comtop.local/svn/testSVN/trunk/<br>
+	 * 则targetPath可以配置为trunk
+	 */
+	String targetPath
+	
+	/**
 	 * 从本地文件中读取
 	 *
 	 * <pre autoTested=''>
