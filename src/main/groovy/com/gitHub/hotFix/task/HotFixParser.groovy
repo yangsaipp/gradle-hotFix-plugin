@@ -48,7 +48,7 @@ class HotFixParser extends DefaultTask {
 			//获取当前project工程文件夹名到working path的相对路径，用于查询对应目录的日志
 			scmInfo.workingPath = project.rootProject.projectDir.path
 			if(!paramer.startRevision) {
-				throw new RuntimeException("Please specify the SVN start revision. for example:gradle hotFixGenerate -P${HotFixParameter.START_REVISION}=2")
+				throw new RuntimeException("Please specify the SVN start revision. for example:gradle hotFix -P${HotFixParameter.START_REVISION}=2")
 			}
 			//FIXME:targetpath处理问题，如复杂工程结构：/root、/root/project1、/root/project1/project1.1
 //			String targetpath =  project.rootProject == project ? '' : project.projectDir.name
