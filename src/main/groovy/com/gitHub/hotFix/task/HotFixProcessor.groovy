@@ -99,13 +99,14 @@ class HotFixProcessor extends DefaultTask {
 			boolean isIgnore = true
 			for (component in hotFixModel.components.values()) {
 				def index = it.indexOf(component.source)
-				if(index > 0 && it.indexOf("${project.projectDir.name}/${component.source}" ) == -1) {
+				// 多项目支持需要重新设计考虑，不能仅仅是根据projectName来判断
+//				if(index > 0 && it.indexOf("${project.projectDir.name}/${component.source}" ) == -1) {
 					//比如/g-fileload/src/main/java/..java,而执行命令是在g-web工程下，将忽悠其他工程目录的修改
 					//排除非本工程的变更文件
-					buildLogger.debug('ignore file -> index={}, path={}, [name={},source={}]', index, it, component.name, component.source)
-					ignoreFiles << it
-					break
-				}
+//					buildLogger.debug('ignore file -> index={}, path={}, [name={},source={}]', index, it, component.name, component.source)
+//					ignoreFiles << it
+//					break
+//				}
 				
 				if(index > -1) {
 					isIgnore = false
