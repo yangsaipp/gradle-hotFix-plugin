@@ -3,14 +3,14 @@ Gradle增量自动生成插件，顾名思义是基于Gradle而开发的插件�
 
 发布增量是一个高频率事件，增量包是把修改的文件按照其所在目录依次创建对应目录然后存放，一般增量包是手动整理或者使用一些简单脚本（每次生成都要修改配置），效率不高且容易出错，Gradle增量自动生成正是为解决这个问题而开发 ，使用它只需一次配置，每次生成增量运行命令就可以生成增量。
 
-gradle-hotFix-plugin，可以读取svn提交记录获取对应变更文件生成增量，主要针对java项目，配置简单，使用方便。
+gradle-hotFix-plugin可以读取svn提交记录获取对应变更文件生成增量，配置简单，使用方便、高效，主要适用于gradle管理的java项目，
 
 ## 入门
 
-必要：工程里使用java插件且相关任务如jar等能正常使用。
+前提：项目使用gradle管理。
 
 #### 第一步：引入hotFix插件
-在build.xml里引入hotFix插件
+build.xml里引入hotFix插件
 
 	apply plugin: 'java'
 	//引入hotFix插件
@@ -31,12 +31,12 @@ gradle-hotFix-plugin，可以读取svn提交记录获取对应变更文件生成
 	}
 	...
 
-#### 第二步：配置hotFix
+#### 第二步：配置hotFix插件信息
 配置svn访问账号，账号要求有读取log权限
 
 	...    
 	hotFix {
-		// 配置增量存放目录和名称
+		// 配置增量存放目录和名称，相对路径（项目根目录）
 		targetDir = "build/hotFix/${project.name}_hotfix_"+ new Date().format('yyyy-MM-dd_HHmm')
 		svn {
 			username = 'test'
@@ -46,13 +46,36 @@ gradle-hotFix-plugin，可以读取svn提交记录获取对应变更文件生成
 	...
 
 #### 第三步：运行命令生成增量
-运行以下命令
+在CMD控制台，运行以下命令：
 
-    gradlew HotFix -Pstart=svnStartNum -Pend=svnEndNum
+    gradlew hotFix -Pstart=svnStartNum -Pend=svnEndNum
 
 `svnStartNum`、`svnEndNum`是svn的版本号，以上命令会将svn版本号为`svnStartNum`到`svnEndNum`这之间的变更文件提取生成增量。PeRevision参数可选，若不配置则表示到最新版本。
 
 命令运行完后会在第二步中配置的targetDir目录生成对应的增量文件。
+
+## Gradle任务
+
+引入本插件后会增加三个gradle task，用户只需使用hotFix任务即可。
+
+task | description
+----|------------
+`hotFix` | 增量生成任务
+`process` | 分析处理变更文件
+`parse` | 解析SCM或者自定义文件中得到变更文件集合
+
+#### hotFix参数列表
+
+name | description
+----|------------
+`start` | 指定本次增量变更文件的svn开始版本号
+`end` | 指定本次增量变更文件的svn结束版本号，若不指定则为svn最后提交版本号
+`author` | 指定本次增量变更文件的修改人，若有多个使用,分割。
+
+场景：版本发布后发现问题处理后需要出增量，同事A处理问题，同事B开发新功能，文件修改记录从SVN版本号1000到1020之间，那么可以使用如下命令生成增量：
+
+    gradlew hotFix -Pstart=1000 -Pend=1020 -Pauthor=A
+
 
 ## 详细参数
 
@@ -86,7 +109,7 @@ key | default | description
 	}
 	...
 
-`myHotFix.txt`内容（一个文件路径占一行）：
+`myHotFix.txt`样例：
 
     src\main\java\org\gradle\sample\Greeter.java
 	src\main\java\org\gradle\GradleCopy.java
@@ -95,7 +118,10 @@ key | default | description
 	src\main\webapp\WEB-INF\web.xml
 	src\main\webapp\index.jsp
 
-说明： 使用该配置方式运行命令`gradlew hotFix`即可，无需指定`-Pstart` 和 `-Pend`等参数
+自定义变更文件配置文件使用说明：
+1. 一行文本只能描述一个变更文件记录
+2. 可以使用通配符*，例如：src\main\java\org\**\*.java
+3. 使用该配置方式时运行命令`gradlew hotFix`无需指定`-Pstart` 和 `-Pend`
 
 #### svn 参数
 
