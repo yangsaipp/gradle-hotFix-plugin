@@ -1,9 +1,20 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 group = 'com.github'
 version = '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+		mavenLocal()
+        jcenter()
+    }
+    dependencies {
+		classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1"
+    }
+}
 
 repositories {
 	mavenLocal()
@@ -12,7 +23,7 @@ repositories {
 			url "http://10.10.50.24:8081/nexus/content/groups/public"
 		}
 	}
-	mavenCentral()
+	jcenter()
 }
 
 dependencies {
@@ -36,7 +47,7 @@ task sourceJar(type: Jar) {
 
 publishing {
 	publications {	
-		maven(MavenPublication) { // 运行publishToMavenLocal命令
+		MyPublication(MavenPublication) { // 运行publishToMavenLocal命令
 			from components.java
 			artifact sourceJar
 		}
@@ -55,6 +66,32 @@ publishing {
 	}
 }
 
-task sysout << {
-	println GroovySystem.version.replaceAll(/\.\d+$/,'')
+bintray {
+	user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+	key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+	publications = ['MyPublication']
+	override = true
+//	filesSpec {
+//		from 'build/libs'
+//		into '.'
+//	}
+	pkg {
+		repo = 'Repo'
+		name = project.name
+		userOrg = 'yancey-ys'
+		desc = 'what a fantastic package indeed!'
+		licenses = ['Apache-2.0']
+		vcsUrl = 'https://github.com/yangsaipp/gradle-hotFix-plugin.git'
+		labels = ['hotfix', 'gradle', 'plugin']
+		publicDownloadNumbers = true
+		githubRepo = 'yangsaipp/gradle-hotFix-plugin' //Optional Github repository
+		githubReleaseNotesFile = 'README.md' //Optional Github readme file
+		attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
+		version {
+			name = project.version
+			desc = 'Gradle hotFix plugin'
+//			vcsTag = '1.0.0'
+			//attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+		}
+	}
 }
