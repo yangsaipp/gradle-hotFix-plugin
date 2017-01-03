@@ -45,11 +45,52 @@ task sourceJar(type: Jar) {
   classifier "sources"
 }
 
+def des = 'Gradle hotFix plugin'
+def siteUrl = 'https://github.com/yangsaipp/gradle-hotFix-plugin'
 publishing {
 	publications {	
 		MyPublication(MavenPublication) { // 运行publishToMavenLocal命令
 			from components.java
 			artifact sourceJar
+			pom.withXml {
+				def root = asNode()
+				root.appendNode('name', des)
+				root.appendNode('description', des)
+				root.appendNode('url', siteUrl)
+				
+				//licenses {
+				//	license {
+				//		name 'The Apache Software License, Version 2.0'
+				//		url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+				//	}
+				//}
+				def license = root.appendNode('licenses').appendNode('license')
+				license.appendNode('name', 'The Apache Software License, Version 2.0')
+				license.appendNode('url', 'http://www.apache.org/licenses/LICENSE-2.0.txt')
+				
+				//developers {
+				//	developer {
+				//		id 'zhaoyanjun'        //填写开发者的一些基本信息
+				//		name 'zhaoyanjun'    //填写开发者的一些基本信息
+				//		email '1643915516@qq.com'   //填写开发者的一些基本信息
+				//	}
+				//}
+				def developer = root.appendNode('developers').appendNode('developer')
+				developer.appendNode('id', 'yangsai')
+				developer.appendNode('name', 'yangsai')
+				developer.appendNode('email', 'yangsaipp@qq.com')
+				
+				//scm {
+				//	connection gitUrl
+				//	developerConnection gitUrl
+				//	url siteUrl
+				//}
+				
+				def scm = root.appendNode('scm')
+				scm.appendNode('connection', siteUrl)
+				scm.appendNode('developerConnection', siteUrl)
+				scm.appendNode('url', siteUrl)
+			}
 		}
 	}
 	repositories {	// 运行publish命令
@@ -71,13 +112,14 @@ bintray {
 	key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
 	publications = ['MyPublication']
 	override = true
+	publish = true
 //	filesSpec {
 //		from 'build/libs'
 //		into '.'
 //	}
 	pkg {
 		repo = 'Repo'
-		name = project.name
+		name = 'gradle-hotFix-plugin'
 		userOrg = 'yancey-ys'
 		desc = 'what a fantastic package indeed!'
 		licenses = ['Apache-2.0']
@@ -86,10 +128,10 @@ bintray {
 		publicDownloadNumbers = true
 		githubRepo = 'yangsaipp/gradle-hotFix-plugin' //Optional Github repository
 		githubReleaseNotesFile = 'README.md' //Optional Github readme file
-		attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
+//		attributes= ['a': ['ay1', 'ay2'], 'b': ['bee'], c: 'cee'] //Optional package-level attributes
 		version {
 			name = project.version
-			desc = 'Gradle hotFix plugin'
+			desc = des
 //			vcsTag = '1.0.0'
 			//attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
 		}
